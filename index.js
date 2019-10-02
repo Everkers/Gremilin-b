@@ -3,7 +3,7 @@ require("dotenv").config();
 const isIncludesPrefix = require("./utils/includesPrefix"); //check if message includes prefix (?)
 const myProfile = require("./utils/myProfile"); //get info about passed username profile
 const imgToBase = require("./utils/imgToBase64");
-const emoji = require("./utils/emoji");
+const emojiF = require("./utils/emoji");
 const Discord = require("discord.js");
 const token = process.env.TOKEN_BOT;
 const client = new Discord.Client();
@@ -59,35 +59,36 @@ client.on("message", async msg => {
       });
     } else if (command.match(commands.profile)) {
       let username = command.substr(command.indexOf(" ") + 1);
-      console.log(username);
 
       const errors_messages_pack = [
         "ma3reftch chnu baghi dir asat :joy:.. dir username dyalk mn mor command \n example:``?profile_dyali everkers``",
         "ghariba eandk had command ☹️jreb hadi chuf 3la lah \n example:``?profile_dyali everkers`` ",
         "ste3ml ``?bro`` bach dchuf kifach khdamin commands"
       ];
-      if (username == undefined) {
+      if (username == 'profile_dyali') {
         const random = Math.floor(Math.random() * errors_messages_pack.length);
         msg.reply(errors_messages_pack[random]);
       } else if (username.length < 3) {
         msg.reply("sorry bro username li derti sghir bzf,  7awl mra 2ukhra");
       } else if (username.length > 16) {
         msg.reply("a fin ghadi awa, nta baghi li y7wik waqila?:joy:");
-      } else {
+      } 
+      else {
         try {
           const res = await myProfile(username); //get profile
           const base64 = await imgToBase(res.lastMatch.champ.image); //convert champ image to base64 to upload it as an emoji
-          const upload_emoji = await emoji.upload(
+          let discord_emoji = "";
+          await emojiF.upload(
             base64,
             res.lastMatch.champ.name,
             msg.guild.id
-          ); //upload emoji to the server
-          let discord_emoji = "";
-          await msg.guild.emojis.forEach(emoji => {
+          ) //upload emoji to the server
+           await msg.guild.emojis.forEach( emoji => {
             if (emoji.name == res.lastMatch.champ.name.split(" ")[0]) {
-              discord_emoji = emoji;
+              discord_emoji =  emoji;
             }
-          }); /*set the data to our variable*/
+            }); 
+          /*set the data to our variable*/
           //set information to msg
           const info = new Discord.RichEmbed()
             .setColor("#0099ff")
@@ -107,15 +108,17 @@ client.on("message", async msg => {
             )
             .addField(`Nisbat l9wada(Level)`, res.level, true)
             .setThumbnail(res.iconProfile);
-          await msg.channel.send(info).then(() => {
-            emoji.delete(msg.guild.id, discord_emoji.id);
+            msg.channel.send(info).then(() => {
+                msg.guild.emojis.forEach( emoji => {
+                if (emoji.name == res.lastMatch.champ.name.split(" ")[0]) {
+                    emojiF.delete(msg.guild.id, emoji.id);   
+                }
+                }); 
           });
         } catch (err) {
-          if (err.response.status == 404) {
             msg.reply(
-              `Mkaynch had khuna or khtna f league of legends , maybe kaynin f chi region wa7da ukhra soon gha nwli ka n supporti ga3 regions:fire:!`
+                `an error occurred`
             );
-          }
         }
       }
     } else {
