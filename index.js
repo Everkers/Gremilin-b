@@ -7,7 +7,6 @@ const emoji = require('./utils/emoji')
 const Discord = require('discord.js');
 const token = process.env.TOKEN_BOT;
 const client = new Discord.Client();
-client.emojis.crea
 client.on('ready' , ()=>{
     console.log('ready')
     client.user.setActivity('PornHub' , {type:'WATCHING'})
