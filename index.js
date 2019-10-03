@@ -2,6 +2,9 @@ require("dotenv").config();
 //UTILS
 const isIncludesPrefix = require("./utils/includesPrefix"); //check if message includes prefix (?)
 const myProfile = require("./utils/myProfile"); //get info about passed username profile
+const build = require('./utils/build')
+const championByName = require('./utils/getChampByName')
+const banS = require('./utils/ban_suggestion')
 const imgToBase = require("./utils/imgToBase64");
 const emojiF = require("./utils/emoji");
 const Discord = require("discord.js");
@@ -22,42 +25,105 @@ client.on("ready", () => {
 //commands
 const commands = {
   help: new RegExp("bro", "gis"),
-  profile: new RegExp("profile_dyali", "gis")
+  profile: new RegExp("profile_dyali", "gis"),
+  items: new RegExp("items_mzianin", "gis"),
+  ban_s: new RegExp("chnu_nbani", "gis")
 };
-
 //When someone send message
 client.on("message", async msg => {
+  function help(){
+    msg.channel.send({
+      embed: {
+        color: 15844367,
+        author: {
+          name: client.user.username
+        },
+        title: "HADU HUMA COMMANDS LI KAYNIN DB ✨",
+        fields: [
+          {
+            name: "**?PROFILE_DYALI [USERNAME]**",
+            value: "HAD COMMAND KADJIB LIK GA3 INFO 3LA PROFILE DYALK"
+          },
+          {
+            name: "**?CHNU_NBANI [CHAMPION DYALK]**",
+            value: "HAD COMMAND KA D3TIK CHAMPIONS LI KHASEK TBANIHUM"
+          },
+          {
+            name: "**?ITEMS_MZIANIN [CHAMPION]**",
+            value: `HAD COMMAND KA D3TIK RECOMMANDED ITEMS L'CHAMP LI DWZTI LIHA`
+          }
+        ]
+      }
+    });
+  }
   if (isIncludesPrefix(msg.content)) {
     //check if message includes prefix (?)
     const i = msg.content.split("?");
     const command = i[1]; //get only command
+    
     if (command.match(commands.help)) {
-      //and see if it's match our command in commands object
-      msg.channel.send({
-        embed: {
-          //if the command is help = send this template of all our availble commands
-          color: 15844367,
-          author: {
-            name: client.user.username
-          },
-          title: "HADU HUMA COMMANDS LI KAYNIN DB ✨",
-          fields: [
-            {
-              name: "**?PROFILE_DYALI [USERNAME]**",
-              value: "HAD COMMAND KADJIB LIK GA3 INFO 3LA PROFILE DYALK🙃"
-            },
-            {
-              name: "**?M_BANNED**",
-              value: "HAD COMMAND KA D3TIK CHAMPIONS LI KAYTBANAW BZF 😁"
-            },
-            {
-              name: "**?ITEMS_MZIANIN [CHAMP]**",
-              value: `HAD COMMAND KA D3TIK RECOMMANDED ITEMS L'CHAMP LI DWZTI LIHA🌈`
-            }
-          ]
+      help()
+    }
+    else if(command.match(commands.ban_s)){
+      let champion = command.substr(command.indexOf(" ") + 1);
+      const res = await banS(champion);
+       if(champion == 'chnu_nbani'){
+         help()
+       }
+       else if (res.length < 1){
+        msg.reply(`mal9itch had champ i'm sorry :cry:`)
+      }
+      else{
+        try{
+          const image = await championByName(champion)
+          const info = new Discord.RichEmbed()    
+          .setTitle(`chkun n bani u ana la3b b ${champion} :confused:?`)
+          .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/champion/${image[0].image.full}`)
+          res.forEach((champ , i)=>{
+            info.addField(`CHAMPION ${i+1}` , champ , true)
+          })
+          info.setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+          msg.channel.send(info)
         }
-      });
-    } else if (command.match(commands.profile)) {
+        catch(err){
+          console.log(err)
+          msg.channel.send("an error occurred, contact me and i'll try to fix it ``Everkers#6416``")
+        }
+      }
+    }
+    else if(command.match(commands.items)){
+      let champion = command.substr(command.indexOf(" ") + 1);
+      if (champion == 'items_mzianin'){
+        help()
+      }
+      else{
+        const res = await build(champion)
+        if(res.length < 1){
+          msg.reply(`mal9itch had champ i'm sorry :cry:`)
+        }
+        else{
+          try{
+            const extra_info = await championByName(champion) 
+            const info = new Discord.RichEmbed()    
+            .addField(`Chkun had ${champion}?` , extra_info[0].about, true)
+            .addBlankField()        
+            .setTitle(`Items mzianin dyal ${champion} :heart:`)
+            .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/champion/${extra_info[0  ].image.full}`)
+            .setColor("#0099ff")
+            .setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+            res.forEach((item , i)=>{
+              info.addField(`ITEM ${i+1}` , item , true)
+            })
+            msg.channel.send(info)
+          }
+          catch(err){
+            msg.channel.send("an error occurred, contact me and i'll try to fix it ``Everkers#6416``")
+          }
+
+        }
+      }
+    }
+    else if (command.match(commands.profile)) {
       let username = command.substr(command.indexOf(" ") + 1);
 
       const errors_messages_pack = [
@@ -93,6 +159,7 @@ client.on("message", async msg => {
           const info = new Discord.RichEmbed()
             .setColor("#0099ff")
             .setAuthor(`${res.username}`)
+            .setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
             .addField(
               "Akhir Ter7",
               ` Champ : ${res.lastMatch.champ.name.toUpperCase()}${discord_emoji} \n Lane : ${
@@ -122,30 +189,7 @@ client.on("message", async msg => {
         }
       }
     } else {
-      msg.channel.send({
-        embed: {
-          //if the command is help = send this template of all our availble commands
-          color: 15844367,
-          author: {
-            name: client.user.username
-          },
-          title: "HADU HUMA COMMANDS LI KAYNIN DB ✨",
-          fields: [
-            {
-              name: "**?PROFILE_DYALI [USERNAME]**",
-              value: "HAD COMMAND KADJIB LIK GA3 INFO 3LA PROFILE DYALK🙃"
-            },
-            {
-              name: "**?M_BANNED**",
-              value: "HAD COMMAND KA D3TIK CHAMPIONS LI KAYTBANAW BZF 😁"
-            },
-            {
-              name: "**?ITEMS_MZIANIN [CHAMP]**",
-              value: `HAD COMMAND KA D3TIK RECOMMANDED ITEMS L'CHAMP LI DWZTI LIHA🌈`
-            }
-          ]
-        }
-      });
+       help()
     }
   }
 });
