@@ -82,7 +82,7 @@ client.on("message", async msg => {
           res.forEach((champ , i)=>{
             info.addField(`CHAMPION ${i+1}` , champ , true)
           })
-          info.setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+          info.setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
           msg.channel.send(info)
         }
         catch(err){
@@ -110,7 +110,7 @@ client.on("message", async msg => {
             .setTitle(`Items mzianin dyal ${champion} :heart:`)
             .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/champion/${extra_info[0  ].image.full}`)
             .setColor("#0099ff")
-            .setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+            .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
             res.forEach((item , i)=>{
               info.addField(`ITEM ${i+1}` , item , true)
             })
@@ -159,7 +159,7 @@ client.on("message", async msg => {
           const info = new Discord.RichEmbed()
             .setColor("#0099ff")
             .setAuthor(`${res.username}`)
-            .setFooter(`Developed with love by Everkers#6416` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+            .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
             .addField(
               "Akhir Ter7",
               ` Champ : ${res.lastMatch.champ.name.toUpperCase()}${discord_emoji} \n Lane : ${
