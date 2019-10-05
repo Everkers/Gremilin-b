@@ -4,6 +4,7 @@ const isIncludesPrefix = require("./utils/includesPrefix"); //check if message i
 const myProfile = require("./utils/myProfile"); //get info about passed username profile
 const build = require('./utils/build')
 const championByName = require('./utils/getChampByName')
+const getMostBannedChamps= require('./utils/most_banned')//get most banned champs
 const banS = require('./utils/ban_suggestion')
 const imgToBase = require("./utils/imgToBase64");
 const emojiF = require("./utils/emoji");
@@ -14,11 +15,10 @@ client.on("ready", () => {
   console.log("ready");
   client.user.setPresence({
     game: {
-      name: "League of Legends",
-      url: "https://www.twitch.tv/directory/game/League%20of%20Legends",
+      name: "?bro",
       type: "PLAYING"
     },
-    status: "online"
+    status: "dnd"
   });
 });
 
@@ -27,7 +27,8 @@ const commands = {
   help: new RegExp("bro", "gis"),
   profile: new RegExp("profile_dyali", "gis"),
   items: new RegExp("items_mzianin", "gis"),
-  ban_s: new RegExp("chnu_nbani", "gis")
+  ban_s: new RegExp("chnu_nbani", "gis"),
+  ban_m : new RegExp("bans", "gis")
 };
 //When someone send message
 client.on("message", async msg => {
@@ -51,6 +52,10 @@ client.on("message", async msg => {
           {
             name: "**?ITEMS_MZIANIN [CHAMPION]**",
             value: `HAD COMMAND KA D3TIK RECOMMANDED ITEMS L'CHAMP LI DWZTI LIHA`
+          },
+          {
+            name: "**?BANS**",
+            value: `HAD COMMAND KA D3TIK CHAMPIONS LI KAYTBANAW BZAF F LAST PATCH`
           }
         ]
       }
@@ -91,6 +96,24 @@ client.on("message", async msg => {
         }
       }
     }
+    else if(command.match(commands.ban_m)){
+     try{
+      const res = await getMostBannedChamps()
+      const banned = new Discord.RichEmbed()
+      .setTitle(`Hadu huma champions li kaytbanaw bzaf f patch ${res.patch}`)
+      .setThumbnail('https://cdna.artstation.com/p/assets/images/images/005/290/132/large/melissa-yabumoto-hppqxlo.jpg')
+      .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
+      const champs = res.champs;
+      champs.forEach(( champ,index)=>{
+        banned.addField( `Champion ${index + 1}`,champ , true)
+      })
+      msg.channel.send(banned)
+     }
+     catch(err){
+      msg.channel.send("an error occurred, contact me and i'll try to fix it ``Everkers#6416``")
+     }
+      
+    }
     else if(command.match(commands.items)){
       let champion = command.substr(command.indexOf(" ") + 1);
       if (champion == 'items_mzianin'){
@@ -123,8 +146,8 @@ client.on("message", async msg => {
         }
       }
     }
+
     else if (command.match(commands.profile)) {
-      let username = command.substr(command.indexOf(" ") + 1);
 
       const errors_messages_pack = [
         "ma3reftch chnu baghi dir asat :joy:.. dir username dyalk mn mor command \n example:``?profile_dyali everkers``",
@@ -188,7 +211,7 @@ client.on("message", async msg => {
             );
         }
       }
-    } else {
+    } else if(command.match(commands.help)) {
        help()
     }
   }
