@@ -148,7 +148,7 @@ client.on("message", async msg => {
     }
 
     else if (command.match(commands.profile)) {
-
+      let username = command.substr(command.indexOf(" ") + 1);
       const errors_messages_pack = [
         "ma3reftch chnu baghi dir asat :joy:.. dir username dyalk mn mor command \n example:``?profile_dyali everkers``",
         "ghariba eandk had command ☹️jreb hadi chuf 3la lah \n example:``?profile_dyali everkers`` ",
