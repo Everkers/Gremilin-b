@@ -15,20 +15,19 @@ client.on("ready", () => {
   console.log("ready");
   client.user.setPresence({
     game: {
-      name: "?bro",
+      name: "?help",
       type: "PLAYING"
     },
-    status: "dnd"
   });
 });
 
 //commands
 const commands = {
-  help: new RegExp("bro", "gis"),
-  profile: new RegExp("profile_dyali", "gis"),
-  items: new RegExp("items_mzianin", "gis"),
-  ban_s: new RegExp("chnu_nbani", "gis"),
-  ban_m : new RegExp("bans", "gis")
+  help: new RegExp("help", "gis"),
+  profile: new RegExp("profile", "gis"),
+  items: new RegExp("items", "gis"),
+  ban_s: new RegExp("ban", "gis"),
+  ban_m : new RegExp("devils", "gis")
 };
 //When someone send message
 client.on("message", async msg => {
@@ -39,23 +38,23 @@ client.on("message", async msg => {
         author: {
           name: client.user.username
         },
-        title: "HADU HUMA COMMANDS LI KAYNIN DB ✨",
+        title: "All commands available are",
         fields: [
           {
-            name: "**?PROFILE_DYALI [USERNAME]**",
-            value: "HAD COMMAND KADJIB LIK GA3 INFO 3LA PROFILE DYALK"
+            name: "?profile [username]",
+            value: "Informations about your account"
           },
           {
-            name: "**?CHNU_NBANI [CHAMPION DYALK]**",
-            value: "HAD COMMAND KA D3TIK CHAMPIONS LI KHASEK TBANIHUM"
+            name: "?ban [champion]",
+            value: "Which champions you should ban"
           },
           {
-            name: "**?ITEMS_MZIANIN [CHAMPION]**",
-            value: `HAD COMMAND KA D3TIK RECOMMANDED ITEMS L'CHAMP LI DWZTI LIHA`
+            name: "?items [champion]",
+            value: `Best available items for your champion`
           },
           {
-            name: "**?BANS**",
-            value: `HAD COMMAND KA D3TIK CHAMPIONS LI KAYTBANAW BZAF F LAST PATCH`
+            name: "?devils",
+            value: `The most banned champions on the last patch`
           }
         ]
       }
@@ -72,17 +71,17 @@ client.on("message", async msg => {
     else if(command.match(commands.ban_s)){
       let champion = command.substr(command.indexOf(" ") + 1);
       const res = await banS(champion);
-       if(champion == 'chnu_nbani'){
+       if(champion == 'ban'){
          help()
        }
        else if (res.length < 1){
-        msg.reply(`mal9itch had champ i'm sorry :cry:`)
+        msg.reply(`i can't find this champion`)
       }
       else{
         try{
           const image = await championByName(champion)
           const info = new Discord.RichEmbed()    
-          .setTitle(`chkun n bani u ana la3b b ${champion} :confused:?`)
+          .setTitle(`The champions ${champion} is weak against them ?`)
           .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/champion/${image[0].image.full}`)
           res.forEach((champ , i)=>{
             info.addField(`CHAMPION ${i+1}` , champ , true)
@@ -100,7 +99,7 @@ client.on("message", async msg => {
      try{
       const res = await getMostBannedChamps()
       const banned = new Discord.RichEmbed()
-      .setTitle(`Hadu huma champions li kaytbanaw bzaf f patch ${res.patch}`)
+      .setTitle(`Most banned champions on patch : ${res.patch}`)
       .setThumbnail('https://cdna.artstation.com/p/assets/images/images/005/290/132/large/melissa-yabumoto-hppqxlo.jpg')
       .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
       const champs = res.champs;
@@ -116,21 +115,21 @@ client.on("message", async msg => {
     }
     else if(command.match(commands.items)){
       let champion = command.substr(command.indexOf(" ") + 1);
-      if (champion == 'items_mzianin'){
+      if (champion == 'items'){
         help()
       }
       else{
         const res = await build(champion)
         if(res.length < 1){
-          msg.reply(`mal9itch had champ i'm sorry :cry:`)
+          msg.reply(`i can't find this champion`)
         }
         else{
           try{
             const extra_info = await championByName(champion) 
             const info = new Discord.RichEmbed()    
-            .addField(`Chkun had ${champion}?` , extra_info[0].about, true)
+            .addField(`Who's ${champion}?` , extra_info[0].about, true)
             .addBlankField()        
-            .setTitle(`Items mzianin dyal ${champion} :heart:`)
+            .setTitle(`Suggested items for ${champion} :rose:`)
             .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/champion/${extra_info[0  ].image.full}`)
             .setColor("#0099ff")
             .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
@@ -149,18 +148,12 @@ client.on("message", async msg => {
 
     else if (command.match(commands.profile)) {
       let username = command.substr(command.indexOf(" ") + 1);
-      const errors_messages_pack = [
-        "ma3reftch chnu baghi dir asat :joy:.. dir username dyalk mn mor command \n example:``?profile_dyali everkers``",
-        "ghariba eandk had command ☹️jreb hadi chuf 3la lah \n example:``?profile_dyali everkers`` ",
-        "ste3ml ``?bro`` bach dchuf kifach khdamin commands"
-      ];
-      if (username == 'profile_dyali') {
-        const random = Math.floor(Math.random() * errors_messages_pack.length);
-        msg.reply(errors_messages_pack[random]);
+      if (username == 'profile') {
+        help()
       } else if (username.length < 3) {
-        msg.reply("sorry bro username li derti sghir bzf,  7awl mra 2ukhra");
+        msg.reply("This username is too short!");
       } else if (username.length > 16) {
-        msg.reply("a fin ghadi awa, nta baghi li y7wik waqila?:joy:");
+        msg.reply("Are you serious dude?:joy:");
       } 
       else {
         try {
@@ -184,7 +177,7 @@ client.on("message", async msg => {
             .setAuthor(`${res.username}`)
             .setFooter(`Developed with love by Everkers#6416 & Ziad#6132` , `https://cdn.discordapp.com/avatars/490663251953188865/ee246f16ae0729de62d0c1d310e9a1cf.png?size=2048`)
             .addField(
-              "Akhir Ter7",
+              "Last Match",
               ` Champ : ${res.lastMatch.champ.name.toUpperCase()}${discord_emoji} \n Lane : ${
                 res.lane
               } \n Time : ${res.time} \n Role : ${res.role} \n Stats : ${
@@ -193,10 +186,10 @@ client.on("message", async msg => {
                 res.moreInfo.stats.assists
               } \n Game Mode : ${res.moreInfo.mode} \n Duration : ${
                 res.moreInfo.time
-              } \n Natija : ${!res.moreInfo.win ? "Khasara" : "Rb7a"}`,
+              } \n Result : ${!res.moreInfo.win ? "Defeat" : "Victory"}`,
               true
             )
-            .addField(`Nisbat l9wada(Level)`, res.level, true)
+            .addField(`Level`, res.level, true)
             .setThumbnail(res.iconProfile);
             msg.channel.send(info).then(() => {
                 msg.guild.emojis.forEach( emoji => {

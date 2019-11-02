@@ -18,6 +18,5 @@ async function getChampByName(name){
         })
      })
      return validChamp
-return validChamp
 }
 module.exports = getChampByName
