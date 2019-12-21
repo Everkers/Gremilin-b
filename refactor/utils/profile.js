@@ -1,5 +1,6 @@
 const sql = require('sqlite')
 const UserData = require('./userData')
+const Discord = require('discord.js')
 class Profile{
     constructor(){
     }
@@ -55,16 +56,34 @@ class Profile{
     }
 
     async getData(message){
-        const getSummoner = await Profile.getSummoner(message.author.id)
-        if(getSummoner){
-            const {Username , Region} = getSummoner[0]
-            const userData = new UserData(Region , Username)
-            const lastMatch = await userData.lastMatch()
-            
-            
+        try{
+                const getSummoner = await Profile.getSummoner(message.author.id)
+                if(getSummoner){
+                    const {Username , Region} = getSummoner[0]
+                    const userData = new UserData(Region , Username)
+                    const {summonerLevel , profileIconId } = await userData.profileBasicData()
+                    const lastMatch =  await userData.lastMatch()
+                    const {win , kills , deaths , assists, totalMinionsKilled , lane , role } = lastMatch[0].stats
+                    const {name:championName , image:championImages} = lastMatch[0].stats.champion
+                    const messageStyles = new Discord.RichEmbed()
+                          .setColor('#e74c3c')
+                          .setTitle(`${Username} Profile`)
+                          .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/profileicon/${profileIconId}.png`)
+                          .addField('Last Played Match' ,
+                                    `${role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS**`,
+                                    true
+                          )
+                          .addField('Level / Region' , `${summonerLevel} / ${Region}` , true)
+                    message.channel.send(messageStyles)
+
+                }
+                else {
+                    message.channel.send('Try to set user first ``?setUser [summoner name] [summoner region]`` ')
+                }
         }
-        else {
-            message.channel.send('Try to set user first ``?setUser [summoner name] [summoner region]`` ')
+        catch(err){
+            console.log(err)
+            message.channel.send(`Something went wrong, make sure the summoner name and region are correct then try again.`)
         }
         
     }
