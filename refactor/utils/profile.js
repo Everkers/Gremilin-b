@@ -72,9 +72,11 @@ class Profile {
 				const userData = new UserData(Region, Username);
 				const {
 					summonerLevel,
-					profileIconId
+					profileIconId,
+					id: summonerId
 				} = await userData.profileBasicData();
 				const lastMatch = await userData.lastMatch(message);
+				const { patch } = lastMatch[0];
 				const {
 					win,
 					kills,
@@ -86,9 +88,13 @@ class Profile {
 				} = lastMatch[0].stats;
 				const {
 					name: championName,
-					image: championImages,
-					championEmoji
+					image: championImages
 				} = lastMatch[0].stats.champion;
+				const mostPlayedChampions = await userData.mostPlayedChampions(
+					summonerId,
+					patch,
+					message
+				);
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${Username} Profile`)
@@ -97,12 +103,27 @@ class Profile {
 					)
 					.addField(
 						'Last Played Match',
-						`${role} ${lane} as ${championName} ${championEmoji} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS**`,
+						`[${
+							win ? 'Victory' : 'defeat'
+						}] ${role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS**`,
 						true
 					)
-					.addField('Level / Region', `${summonerLevel} / ${Region}`, true);
-				const send = await message.channel.send(messageStyles);
-				userData.deleteEmoji(championEmoji.id, message.guild.id);
+					.addField('Level / Region', `${summonerLevel} / ${Region}`, true)
+					.addField(
+						`Highest Champions Mastery`,
+						`
+						${mostPlayedChampions
+							.map((champ, index) => {
+								const data = `[${index + 1}] ${champ.name} - ${
+									champ.points
+								}pts \n `;
+								return data;
+							})
+							.join('')}
+						`
+					);
+				message.channel.send(messageStyles);
+				// userData.deleteEmoji(championEmoji.id, message.guild.id);
 			} else {
 				message.channel.send(
 					'Try to set user first ``?setUser [summoner name] [summoner region]`` '
@@ -110,9 +131,7 @@ class Profile {
 			}
 		} catch (err) {
 			console.log(err);
-			message.channel.send(
-				`Something went wrong, make sure the summoner name and region are correct then try again.`
-			);
+			message.channel.send(err.message);
 		}
 	}
 }

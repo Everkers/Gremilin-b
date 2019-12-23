@@ -10,7 +10,9 @@ class Emoji {
 	async process(message) {
 		const base64Emoji = await this.toBase64();
 		const upload = await this.upload(base64Emoji);
-		const emoji = message.guild.emojis.find(emoji => emoji.name == this.name);
+		const emoji = await message.guild.emojis.find(
+			emoji => emoji.name == this.name
+		);
 		return emoji;
 	}
 	async upload(base64Emoji) {
@@ -28,6 +30,7 @@ class Emoji {
 					Authorization: `Bot ${process.env.TOKEN_BOT}`
 				}
 			});
+			console.log(res);
 		} catch (err) {
 			console.log(err);
 		}
@@ -108,57 +111,89 @@ class UserData {
 		const emoji = new Emoji();
 		emoji.delete(emojiId, guildId);
 	}
+	async mostPlayedChampions(summonerId, patch, message) {
+		try {
+			const url_mostPlayedChampions = `${this.base_url}/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`;
+			const { data } = await axios.get(url_mostPlayedChampions);
+			const mostPlayedChampions = data.slice(0, 3);
+			return Promise.all(
+				mostPlayedChampions.map(async champion => {
+					const { championId, championLevel, championPoints } = champion;
+					const { image, name } = await this.getChampionById(championId);
+					// const emoji = new Emoji(name, message.guild.id, image, patch);
+					return {
+						name,
+						points: championPoints,
+						level: championLevel
+					};
+				})
+			);
+		} catch (err) {
+			console.log(err);
+			throw new Error(
+				'An error has occurred while trying to fetch most played champions.'
+			);
+		}
+	}
 	async lastMatch(message) {
-		const patch = await this.getCurrentPatch();
-		const { accountId } = await this.profileBasicData();
-		const url_lastMatch = `${this.base_url}/match/v4/matchlists/by-account/${accountId}?endIndex=1&beginIndex=0&api_key=${process.env.TOKEN_LOL}`;
-		const { data: lastPlayedMatch } = await axios.get(url_lastMatch);
-		const { gameId } = lastPlayedMatch.matches[0];
-		const { name: championName, image } = await this.getChampionById(
-			lastPlayedMatch.matches[0].champion
-		);
-		const emoji = new Emoji(championName, message.guild.id, image, patch);
-		const championEmoji = await emoji.process(message);
-		const {
-			gameMode,
-			participantIdentities,
-			participants
-		} = await this.advencedMatchInfo(gameId);
-		let currentPlayerId = null;
-		const currentPlayerSum = [];
-		const data = [];
-		participantIdentities.forEach(participant => {
-			if (participant.player.accountId === accountId) {
-				currentPlayerId = participant.participantId;
-			}
-		});
-		participants.forEach(participant => {
-			if (participant.participantId === currentPlayerId) {
-				currentPlayerSum.push(participant);
-			}
-		});
-		const {
-			win,
-			kills,
-			deaths,
-			assists,
-			totalMinionsKilled
-		} = currentPlayerSum[0].stats;
-		const { role, lane } = currentPlayerSum[0].timeline;
-		data.push({
-			stats: {
+		try {
+			const patch = await this.getCurrentPatch();
+			const { accountId } = await this.profileBasicData();
+			const url_lastMatch = `${this.base_url}/match/v4/matchlists/by-account/${accountId}?endIndex=1&beginIndex=0&api_key=${process.env.TOKEN_LOL}`;
+			const { data: lastPlayedMatch } = await axios.get(url_lastMatch);
+			const { gameId } = lastPlayedMatch.matches[0];
+			const { name: championName, image } = await this.getChampionById(
+				lastPlayedMatch.matches[0].champion
+			);
+			// const emoji = new Emoji(championName, message.guild.id, image, patch);
+			// const championEmoji = await emoji.process(message);
+			const {
+				gameMode,
+				participantIdentities,
+				participants
+			} = await this.advencedMatchInfo(gameId);
+			let currentPlayerId = null;
+			const currentPlayerSum = [];
+			const data = [];
+			participantIdentities.forEach(participant => {
+				if (participant.player.accountId === accountId) {
+					currentPlayerId = participant.participantId;
+				}
+			});
+			participants.forEach(participant => {
+				if (participant.participantId === currentPlayerId) {
+					currentPlayerSum.push(participant);
+				}
+			});
+			const {
 				win,
 				kills,
 				deaths,
 				assists,
-				totalMinionsKilled,
-				role,
-				lane,
-				gameMode,
-				champion: { name: championName, image, championEmoji }
-			}
-		});
-		return data;
+				totalMinionsKilled
+			} = currentPlayerSum[0].stats;
+			const { role, lane } = currentPlayerSum[0].timeline;
+			data.push({
+				patch: patch,
+				stats: {
+					win,
+					kills,
+					deaths,
+					assists,
+					totalMinionsKilled,
+					role,
+					lane,
+					gameMode,
+					champion: { name: championName, image }
+				}
+			});
+			return data;
+		} catch (err) {
+			console.log(err);
+			throw new Error(
+				'An error has occurred while trying to fetch last match data.'
+			);
+		}
 	}
 }
 module.exports = UserData;
