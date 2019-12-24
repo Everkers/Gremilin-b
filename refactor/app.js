@@ -34,4 +34,4 @@ client.on("message", message => {
   }
 });
 
-client.login("NjU5MTMxNTcwNjExMDI3OTY4.XgJ2NQ.OkWCpufkNapwXWtUFXfCMVo8zoY");
+client.login(discord_token);
