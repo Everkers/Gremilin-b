@@ -104,7 +104,7 @@ class UserData {
 		return champion[0];
 	}
 	async advencedMatchInfo(gameId) {
-		const url = `https://euw1.api.riotgames.com/lol/match/v4/matches/${gameId}?api_key=${process.env.TOKEN_LOL}`;
+		const url = `${this.base_url}/match/v4/matches/${gameId}?api_key=${process.env.TOKEN_LOL}`;
 		const { data: match } = await axios.get(url);
 		return match;
 	}
