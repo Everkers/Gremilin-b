@@ -96,13 +96,6 @@ class Profile {
 					message
 				);
 				const rankedInfo = await userData.rankedInfo(summonerId);
-				const {
-					tier,
-					rank,
-					leaguePoints,
-					wins: rankWins,
-					losses: rankLosses
-				} = rankedInfo[0];
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${Username} Profile`)
@@ -134,7 +127,11 @@ class Profile {
 					)
 					.addField(
 						`Summoner Rank`,
-						`Tier : ${tier} \n Rank : ${rank} \n Points : ${leaguePoints} \n Wins : ${rankWins} \n Losses : ${rankLosses}`,
+						`${
+							rankedInfo
+								? `Tier : ${rankedInfo.tier} \n Rank : ${rankedInfo.rank} \n Points : ${rankedInfo.leaguePoints} \n Wins : ${rankedInfo.wins} \n Losses : ${rankedInfo.losses}`
+								: 'Unranked'
+						}`,
 						true
 					);
 				message.channel.send(messageStyles);

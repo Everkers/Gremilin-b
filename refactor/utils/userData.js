@@ -141,9 +141,13 @@ class UserData {
 			const urlRanked = `${this.base_url}/league/v4/entries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`;
 			const { data: rankedData } = await axios.get(urlRanked);
 			const data = [];
-			const { tier, rank, leaguePoints, wins, losses } = rankedData[0];
-			data.push({ tier, rank, leaguePoints, wins, losses });
-			return data;
+			if (rankedData[0]) {
+				const { tier, rank, leaguePoints, wins, losses } = rankedData[0];
+				data.push({ tier, rank, leaguePoints, wins, losses });
+				return data[0];
+			} else {
+				return false;
+			}
 		} catch (err) {
 			console.log(err);
 			throw new Error(
