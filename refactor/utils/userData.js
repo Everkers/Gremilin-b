@@ -71,6 +71,8 @@ class UserData {
 	static Region(region) {
 		if (region == 'ru' || region == 'kr') {
 			return region;
+		} else if (region == 'lan') {
+			return 'la1';
 		} else {
 			return region + 1;
 		}
