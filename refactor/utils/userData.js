@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
+const moment = require('moment');
 class Emoji {
 	constructor(name, guildId, imageUrl, patch) {
 		this.name = name;
@@ -135,13 +136,30 @@ class UserData {
 			);
 		}
 	}
+	async rankedInfo(summonerId) {
+		try {
+			const urlRanked = `${this.base_url}/league/v4/entries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`;
+			const { data: rankedData } = await axios.get(urlRanked);
+			const data = [];
+			const { tier, rank, leaguePoints, wins, losses } = rankedData[0];
+			data.push({ tier, rank, leaguePoints, wins, losses });
+			return data;
+		} catch (err) {
+			console.log(err);
+			throw new Error(
+				'An error has occurred while trying to fetch ranked data.'
+			);
+		}
+	}
 	async lastMatch(message) {
 		try {
 			const patch = await this.getCurrentPatch();
 			const { accountId } = await this.profileBasicData();
 			const url_lastMatch = `${this.base_url}/match/v4/matchlists/by-account/${accountId}?endIndex=1&beginIndex=0&api_key=${process.env.TOKEN_LOL}`;
 			const { data: lastPlayedMatch } = await axios.get(url_lastMatch);
-			const { gameId } = lastPlayedMatch.matches[0];
+			const { gameId, timestamp } = lastPlayedMatch.matches[0];
+			const date = new Date(timestamp); //convert timestamp to normal date
+			const time = moment(date, 'YYYYMMDD').fromNow();
 			const { name: championName, image } = await this.getChampionById(
 				lastPlayedMatch.matches[0].champion
 			);
@@ -175,6 +193,7 @@ class UserData {
 			const { role, lane } = currentPlayerSum[0].timeline;
 			data.push({
 				patch: patch,
+				time,
 				stats: {
 					win,
 					kills,

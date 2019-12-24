@@ -76,7 +76,7 @@ class Profile {
 					id: summonerId
 				} = await userData.profileBasicData();
 				const lastMatch = await userData.lastMatch(message);
-				const { patch } = lastMatch[0];
+				const { patch, time } = lastMatch[0];
 				const {
 					win,
 					kills,
@@ -95,6 +95,14 @@ class Profile {
 					patch,
 					message
 				);
+				const rankedInfo = await userData.rankedInfo(summonerId);
+				const {
+					tier,
+					rank,
+					leaguePoints,
+					wins: rankWins,
+					losses: rankLosses
+				} = rankedInfo[0];
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${Username} Profile`)
@@ -105,10 +113,11 @@ class Profile {
 						'Last Played Match',
 						`[${
 							win ? 'Victory' : 'defeat'
-						}] ${role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS**`,
+						}] ${role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS** ${time}`,
 						true
 					)
 					.addField('Level / Region', `${summonerLevel} / ${Region}`, true)
+					.addBlankField()
 					.addField(
 						`Highest Champions Mastery`,
 						`
@@ -120,7 +129,13 @@ class Profile {
 								return data;
 							})
 							.join('')}
-						`
+						`,
+						true
+					)
+					.addField(
+						`Summoner Rank`,
+						`Tier : ${tier} \n Rank : ${rank} \n Points : ${leaguePoints} \n Wins : ${rankWins} \n Losses : ${rankLosses}`,
+						true
 					);
 				message.channel.send(messageStyles);
 				// userData.deleteEmoji(championEmoji.id, message.guild.id);
