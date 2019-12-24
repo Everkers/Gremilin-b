@@ -4,7 +4,7 @@ const client = new Discord.Client();
 const discord_token = process.env.TOKEN_BOT;
 const Profile = require("./utils/profile");
 client.on("ready", () => {
-  console.log(require("dotenv").config());
+  //console.log(require("dotenv").config());
   console.log("ready");
 });
 

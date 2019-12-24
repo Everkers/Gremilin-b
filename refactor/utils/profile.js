@@ -136,7 +136,7 @@ class Profile {
             true
           );
         message.channel.send(messageStyles);
-        // userData.deleteEmoji(championEmoji.id, message.guild.id);
+        //userData.deleteEmoji(championEmoji.id, message.guild.id);
       } else {
         message.channel.send(
           "Try to set user first ``?setUser [summoner name] [summoner region]`` "
