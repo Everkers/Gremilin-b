@@ -3,8 +3,10 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const discord_token = process.env.TOKEN_BOT;
 const Profile = require('./utils/profile');
+const ImageEditor = require('./utils/imageEditor');
 client.on('ready', () => console.log('ready'));
-
+let msg = null;
+const imageEditor = new ImageEditor();
 const profile = new Profile();
 const commands = {
 	profile: { regex: new RegExp('profile', 'gis'), execute: profile.getData },
@@ -15,6 +17,10 @@ const commands = {
 	updateSummoner: {
 		regex: new RegExp('updateUser', 'gis'),
 		execute: profile.updateUser
+	},
+	imageEditor: {
+		regex: new RegExp('editMe', 'gis'),
+		execute: imageEditor.uploadImage
 	}
 };
 
@@ -27,6 +33,8 @@ client.on('message', message => {
 			commands.setSummoner.execute(message);
 		} else if (content_msg.match(commands.updateSummoner.regex)) {
 			commands.updateSummoner.execute(message);
+		} else if (content_msg.match(commands.imageEditor.regex)) {
+			commands.imageEditor.execute(message);
 		}
 	}
 });
