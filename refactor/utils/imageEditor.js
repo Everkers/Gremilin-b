@@ -1,11 +1,10 @@
 const axios = require('axios');
 class ImageEditor {
-	constructor() {}
 	async uploadImage(message) {
 		try {
 			const imageUrl = message.author.avatarURL;
 			const { data: image } = await axios.get(
-				`http://localhost:3000/imageUpload?url=${imageUrl}`
+				`https://league-fire.herokuapp.com/imageUpload?url=${imageUrl}`
 			);
 			const { url: editedImageUrl, id } = image;
 			const sendImage = await message.channel.send('BINGO!:heart:', {
@@ -19,7 +18,7 @@ class ImageEditor {
 	static async deleteImage(id) {
 		try {
 			const { data: remove } = await axios.get(
-				`http://localhost:3000/imageDelete/${id}`
+				`https://league-fire.herokuapp.com/imageDelete/${id}`
 			);
 		} catch (err) {
 			console.log(err);
