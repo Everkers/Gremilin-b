@@ -105,6 +105,20 @@ class UserData {
 		// console.log(champion)
 		return champion[0];
 	}
+	async getChampionByName(name) {
+		const patch = await this.getCurrentPatch();
+		const championName = new RegExp(name, 'gis');
+		const url = `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion.json`;
+		const { data: response } = await axios.get(url);
+		let champion = [];
+		const champions = Object.keys(response.data);
+		champions.forEach(champ => {
+			if (response.data[champ].name.match(championName)) {
+				champion.push(response.data[champ]);
+			}
+		});
+		return champion[0];
+	}
 	async advencedMatchInfo(gameId) {
 		const url = `${this.base_url}/match/v4/matches/${gameId}?api_key=${process.env.TOKEN_LOL}`;
 		const { data: match } = await axios.get(url);
