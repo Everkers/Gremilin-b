@@ -3,6 +3,7 @@ Gremilin is a discord bot for league of legends player that provides you with so
 ## Why Gremilin
 We built Gremilin to make sure the players got the information that they need quickly while they hanging out with friends on the discord server without waste time visiting websites like <a href='https://www.op.gg/'>Op.gg</a> etc
 ## Commands
+- ``?help`` - This command will show you all the available commands
 - ``?setUser [username] [region]`` - This command will add your username and region to the database.
 - ``?updateUser [new username] [new region]`` - This command will update your username and region if they already exist.
 - ``?profile`` - This command will show you your profile on league of legends including last match etc.
@@ -23,4 +24,4 @@ to install gremilin in your machine follow these steps:
 - Download Gremilin ``git clone https://github.com/Everkers/Gremilin-b.git``  or if you don't have/want to use git, download the ZIP by clicking the green Download button at the top right of this page)
 - cd to to Gremilin directory and run ``npm install`` in your commands line to install all the required dependencies
 - Create ``.env`` file and add **TOKEN_LOL = YOUR TOKEN HERE** and **TOKEN_BOT = YOUR BOT TOKEN HERE**
-- Run the bot with ``npm run test``
+- Run the bot with ``npm run dev``
