@@ -100,7 +100,7 @@ class Profile {
 					.setColor('#e74c3c')
 					.setTitle(`${Username} Profile`)
 					.setThumbnail(
-						`http://ddragon.leagueoflegends.com/cdn/9.19.1/img/profileicon/${profileIconId}.png`
+						`http://ddragon.leagueoflegends.com/cdn/${patch}/img/profileicon/${profileIconId}.png`
 					)
 					.addField(
 						'Last Played Match',
