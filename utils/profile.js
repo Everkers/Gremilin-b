@@ -133,7 +133,7 @@ class Profile {
 								: 'Unranked'
 						}`,
 						true
-					);
+			        ).setFooter(`Developed with love by Everkers#6416` , 'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg')
 				message.channel.send(messageStyles);
 				// userData.deleteEmoji(championEmoji.id, message.guild.id);
 			} else {
