@@ -83,6 +83,7 @@ class Profile {
 					deaths,
 					assists,
 					totalMinionsKilled,
+					neutralMinionsKilled,
 					lane,
 					role
 				} = lastMatch[0].stats;
@@ -106,7 +107,7 @@ class Profile {
 						'Last Played Match',
 						`[${
 							win ? 'Victory' : 'defeat'
-						}] ${role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled}CS** ${time}`,
+						}] ${role == 'NONE' ? '' : role} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled + neutralMinionsKilled}CS** ${time}`,
 						true
 					)
 					.addField('Level / Region', `${summonerLevel} / ${Region}`, true)
