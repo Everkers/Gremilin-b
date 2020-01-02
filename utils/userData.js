@@ -208,7 +208,8 @@ class UserData {
 				kills,
 				deaths,
 				assists,
-				totalMinionsKilled
+				totalMinionsKilled,
+				neutralMinionsKilled
 			} = currentPlayerSum[0].stats;
 			const { role, lane } = currentPlayerSum[0].timeline;
 			data.push({
@@ -220,6 +221,7 @@ class UserData {
 					deaths,
 					assists,
 					totalMinionsKilled,
+					neutralMinionsKilled,
 					role,
 					lane,
 					gameMode,
