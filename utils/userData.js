@@ -1,68 +1,6 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const moment = require('moment');
-class Emoji {
-	constructor(name, guildId, imageUrl, patch) {
-		this.name = name;
-		this.guildId = guildId;
-		this.imageUrl = imageUrl;
-		this.patch = patch;
-	}
-	async process(message) {
-		const base64Emoji = await this.toBase64();
-		const upload = await this.upload(base64Emoji);
-		const emoji = await message.guild.emojis.find(
-			emoji => emoji.name == this.name
-		);
-		return emoji;
-	}
-	async upload(base64Emoji) {
-		try {
-			const uploadUrl = `https://discordapp.com/api/guilds/${this.guildId}/emojis`;
-			let body = {
-				name: this.name.split(' ')[0],
-				image: base64Emoji
-			};
-			const res = await fetch(uploadUrl, {
-				method: 'post',
-				body: JSON.stringify(body),
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bot ${process.env.TOKEN_BOT}`
-				}
-			});
-			console.log(res);
-		} catch (err) {
-			console.log(err);
-		}
-	}
-	async delete(emojiId, guildId) {
-		try {
-			const deleteUrl = `https://discordapp.com/api/guilds/${guildId}/emojis/${emojiId}`;
-			const res = await fetch(deleteUrl, {
-				method: 'delete',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bot ${process.env.TOKEN_BOT}`
-				}
-			});
-		} catch (err) {
-			console.log(err);
-		}
-	}
-	async toBase64() {
-		try {
-			const image = this.imageUrl.full;
-			const urlImage = `http://ddragon.leagueoflegends.com/cdn/${this.patch}/img/champion/${image}`;
-			const response = await fetch(urlImage);
-			const buffer = await response.buffer();
-			const base64 = `data:image/png;base64,${buffer.toString('base64')}`;
-			return base64;
-		} catch (err) {
-			console.log(err);
-		}
-	}
-}
 class UserData {
 	constructor(region, username) {
 		this.base_url = `https://${UserData.Region(region)}.api.riotgames.com/lol`;
@@ -169,6 +107,42 @@ class UserData {
 			throw new Error(
 				'An error has occurred while trying to fetch ranked data.'
 			);
+		}
+	}
+	async getCurrentMatch(id){
+		try{
+			// /spectator/v4/active-games/by-summoner/${id}
+			const urlCurrentMatch = `${this.base_url}/spectator/v4/active-games/by-summoner/${id}?api_key=${process.env.TOKEN_LOL}`
+			const {data:match} = await axios.get(urlCurrentMatch);
+			const data = []
+			data.userTeam = []
+			data.enemyTeam = []
+			data.gameMode = match.gameMode
+			for (let i = 0; i < match.participants.length; i++) {
+				const user = match.participants[i]
+				if(user.teamId == 100){
+					const {summonerName , championId} = user
+					const champion = await this.getChampionById(championId)
+					data.userTeam.push({summonerName , championName:champion.name })
+				}
+				if(user.teamId == 200){
+					const {summonerName , championId} = user
+					const champion = await this.getChampionById(championId)
+					data.enemyTeam.push({summonerName , championName:champion.name})
+				}
+				
+			}
+			return data
+			
+		}
+		catch(err){
+			if(err.response.status == 404){
+				return false
+			}
+			else{
+				console.log(err)
+			}
+
 		}
 	}
 	async lastMatch(message) {

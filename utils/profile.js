@@ -97,6 +97,7 @@ class Profile {
 					message
 				);
 				const rankedInfo = await userData.rankedInfo(summonerId);
+				const currentMatch = await userData.getCurrentMatch(summonerId)
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${Username} Profile`)
@@ -134,9 +135,17 @@ class Profile {
 								: 'Unranked'
 						}`,
 						true
-			        ).setFooter(`Developed with love by Everkers#6416` , 'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg')
+					)
+					.addField(`Current Match` , 
+							  `${currentMatch ? 
+								`${currentMatch.userTeam.map(user=> `${user.summonerName } | ${user.championName} \n`).join('')} \n
+								   --Vs--
+								    \n ${currentMatch.enemyTeam.map(user=> `${user.summonerName } | ${user.championName} \n`).join('')}`
+								 : 'This player is not playing right now.'
+							   }`
+					)
+					.setFooter(`Developed with love by Everkers#6416` , 'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg')
 				message.channel.send(messageStyles);
-				// userData.deleteEmoji(championEmoji.id, message.guild.id);
 			} else {
 				message.channel.send(
 					'Try to set user first ``?setUser [summoner name] [summoner region]`` '
