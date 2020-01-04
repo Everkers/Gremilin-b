@@ -15,13 +15,18 @@ class UserData {
 			return region + 1
 		}
 	}
-	async profileBasicData() {
+	async profileBasicData(message) {
 		try {
 			const url = `${this.base_url}/summoner/v4/summoners/by-name/${this.username}?api_key=${process.env.TOKEN_LOL}`
 			const { data: basicData } = await axios.get(url)
 			return basicData
 		} catch (err) {
-			return false
+			console.log(err)
+			if (err.response.status == 404) {
+				throw new Error('This user does not exist in the current region')
+			} else {
+				throw new Error('An error has occurred while trying to fetch user data')
+			}
 		}
 	}
 	async getCurrentPatch() {
@@ -200,9 +205,7 @@ class UserData {
 			return data
 		} catch (err) {
 			console.log(err)
-			throw new Error(
-				'An error has occurred while trying to fetch last match data, check your username and region.'
-			)
+			throw new Error(err.message)
 		}
 	}
 }

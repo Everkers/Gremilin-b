@@ -118,14 +118,18 @@ class Profile {
 					.addField(
 						`Highest Champions Mastery`,
 						`
-						${mostPlayedChampions
-							.map((champ, index) => {
-								const data = `[${index + 1}] ${champ.name} - ${
-									champ.points
-								}pts \n `
-								return data
-							})
-							.join('')}
+						${
+							mostPlayedChampions.length > 1
+								? mostPlayedChampions
+										.map((champ, index) => {
+											const data = `[${index + 1}] ${champ.name} - ${
+												champ.points
+											}pts \n `
+											return data
+										})
+										.join('')
+								: 'no mastery champions'
+						}
 						`,
 						true
 					)
@@ -177,7 +181,6 @@ class Profile {
 				)
 			}
 		} catch (err) {
-			console.log(err)
 			message.channel.send(err.message)
 		}
 	}
