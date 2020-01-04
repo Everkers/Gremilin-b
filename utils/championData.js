@@ -1,22 +1,22 @@
-const axios = require('axios');
-const Discord = require('discord.js');
-const UserData = require('./userData');
+const axios = require('axios')
+const Discord = require('discord.js')
+const UserData = require('./userData')
 class Champion {
 	async getData(message) {
-		const messageContent = message.content;
+		const messageContent = message.content
 		const [championName] = messageContent
 			.substr(messageContent.indexOf(' ') + 1)
-			.split(' ');
+			.split(' ')
 		if (championName == '?champion') {
-			message.channel.send('type a champion name');
+			message.channel.send('type a champion name')
 		} else {
-			const userData = new UserData();
-			const patch = await userData.getCurrentPatch();
-			const { image } = await userData.getChampionByName(championName);
-			const championImage = `http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${image.full}`;
+			const userData = new UserData()
+			const patch = await userData.getCurrentPatch()
+			const { image } = await userData.getChampionByName(championName)
+			const championImage = `http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${image.full}`
 			const { data: championData } = await axios.get(
 				`https://league-fire.herokuapp.com/champion/${championName}`
-			);
+			)
 			const messageStyles = new Discord.RichEmbed()
 				.setColor('#e74c3c')
 				.setTitle(`${championData.data.champion}`)
@@ -50,12 +50,16 @@ class Champion {
 					`${
 						championData.data.skillsOrder.guide
 					}\n \n  ${championData.data.skillsOrder.order.map((item, i) => {
-						return `${Object.keys(item)} : ${Object.values(item)}   `;
+						return `${Object.keys(item)} : ${Object.values(item)}   `
 					})} `
-				).setFooter(`Developed with love by Everkers#6416` , 'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg')
+				)
+				.setFooter(
+					`Developed with love by Everkers#6416`,
+					'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg'
+				)
 
-			message.channel.send(messageStyles);
+			message.channel.send(messageStyles)
 		}
 	}
 }
-module.exports = Champion;
+module.exports = Champion
