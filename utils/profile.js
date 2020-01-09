@@ -5,10 +5,7 @@ class Profile {
 	constructor() {}
 	async setUser(message) {
 		const messageContent = message.content
-		const [summoner, region] = messageContent
-			.substr(messageContent.indexOf(' ') + 1)
-			.split(' ')
-
+		const summoner = Profile.extractData(messageContent)
 		const db = await sql.open('./users.sqlite', { Promise })
 		const createTable = await db.run(
 			`CREATE TABLE IF NOT EXISTS UsersData (Username TEXT , Region TEXT , GuildId INTEGER , UserId INTEGER) `
@@ -16,10 +13,10 @@ class Profile {
 		const rows = await Promise.all([
 			db.get(`SELECT *  FROM UsersData WHERE UserId = ${message.author.id} `),
 		])
-		if (!rows[0] && summoner != '?setUser' && region != null) {
+		if (!rows[0] && summoner.name != '?setUser' && summoner.region != null) {
 			db.run(
 				`INSERT INTO UsersData (Username , Region , GuildId  , UserId   ) VALUES (?, ? , ? , ? )`,
-				[summoner, region, message.guild.id, message.author.id]
+				[summoner.name, summoner.region, message.guild.id, message.author.id]
 			)
 			message.channel.send('summoner has been successfully registered!')
 		} else {
@@ -39,13 +36,22 @@ class Profile {
 			return rows
 		}
 	}
+	static extractData(data) {
+		if (data.includes('"')) {
+			// const name = data.match(/"(.*?)"/g)[0].replace(/"/g, '')
+			let [command, name, region] = data.split('"')
+			region = region.trim()
+			return { name, region }
+		} else {
+			let [command, name, region] = data.split(' ')
+			return { name, region }
+		}
+	}
 	async updateUser(message) {
 		const messageContent = message.content
-		const [summoner, region] = messageContent
-			.substr(messageContent.indexOf(' ') + 1)
-			.split(' ')
+		const summoner = Profile.extractData(messageContent)
 		const db = await sql.open('./users.sqlite', { Promise })
-		const inputData = [summoner, region, message.author.id]
+		const inputData = [summoner.name, summoner.region, message.author.id]
 		const rows = await Promise.all([
 			db.get(`SELECT *  FROM UsersData WHERE UserId = ${message.author.id} `),
 		])
@@ -53,7 +59,7 @@ class Profile {
 			message.channel.send(
 				'Make sure to set the user first ``?setUser [summoner name] [summoner region]``. '
 			)
-		} else if (summoner != '?updateUser' && region != null) {
+		} else if (summoner.name != '?updateUser' && summoner.name != null) {
 			db.run(
 				'UPDATE UsersData SET Username=? , Region =?  WHERE UserId=? ',
 				inputData

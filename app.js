@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
-const discord_token = process.env.TOKEN_DEVBOT
+const discord_token = process.env.TOKEN_BOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
@@ -31,15 +31,32 @@ const commands = {
 		regex: new RegExp('help', 'gis'),
 	},
 }
+const messages = [
+	'a lot of problems has been fixed',
+	'?help',
+	'league of legends',
+	'world war III',
+]
 client.on('ready', () => {
 	console.log('ready')
+	setInterval(() => {
+		const state = messages[Math.floor(Math.random() * messages.length)]
+		client.user.setPresence({
+			game: {
+				name: state,
+			},
+			status: 'dnd',
+		})
+	}, 60000)
+
 	client.user.setPresence({
 		game: {
 			name: '?help',
-			type: 'WATCHING',
 		},
+		status: 'idle',
 	})
 })
+
 client.on('message', message => {
 	const content_msg = message.content
 	if (content_msg.startsWith('?')) {
@@ -56,6 +73,11 @@ client.on('message', message => {
 		} else if (content_msg.match(commands.help.regex)) {
 			const messageStyles = new Discord.RichEmbed()
 				.setTitle('Gremilin Commands')
+				.addField(
+					'**Important**',
+					'If your username on league of legends contains more than one word then wrap the name with the double quotation marks \n ``example: ?updateUser "FNC MagiFelix" euw``'
+				)
+				.addBlankField()
 				.addField(
 					'`` ?setUser [username] [region] ``',
 					'This command will add your league of legends account to Grimilin mind, next time he will remember you :)',
