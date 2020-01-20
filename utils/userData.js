@@ -45,7 +45,6 @@ class UserData {
 				champion.push(response.data[champ])
 			}
 		})
-		// console.log(champion)
 		return champion[0]
 	}
 	async getChampionByName(name) {

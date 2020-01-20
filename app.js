@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
-const discord_token = process.env.TOKEN_BOT
+const discord_token = process.env.TOKEN_DEVBOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
@@ -15,6 +15,7 @@ const commands = {
 		regex: new RegExp('setUser', 'gis'),
 		execute: profile.setUser,
 	},
+	points: { regex: new RegExp('points', 'gis'), execute: Profile.getPoints },
 	champion: {
 		regex: new RegExp('champion', 'gis'),
 		execute: champion.getData,
@@ -57,7 +58,7 @@ client.on('ready', () => {
 	})
 })
 
-client.on('message', message => {
+client.on('message', async message => {
 	const content_msg = message.content
 	if (content_msg.startsWith('?')) {
 		if (content_msg.match(commands.profile.regex)) {
@@ -70,6 +71,15 @@ client.on('message', message => {
 			commands.imageEditor.execute(message)
 		} else if (content_msg.match(commands.champion.regex)) {
 			commands.champion.execute(message)
+		} else if (content_msg.match(commands.points.regex)) {
+			const points = await commands.points.execute(message)
+			if (points !== false) {
+				message.channel.send(`You have ${points}gp`)
+			} else {
+				message.channel.send(
+					'Something went wrong, Please set the user first , Use ``?setUser [summoner name] [summoner region]`` to set the user.'
+				)
+			}
 		} else if (content_msg.match(commands.help.regex)) {
 			const messageStyles = new Discord.RichEmbed()
 				.setTitle('Gremilin Commands')
