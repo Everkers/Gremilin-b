@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
-const discord_token = process.env.TOKEN_DEVBOT
+const discord_token = process.env.TOKEN_BOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
