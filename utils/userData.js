@@ -114,6 +114,13 @@ class UserData {
 			)
 		}
 	}
+	async getQueueById(queueId) {
+		const urlQueues =
+			'http://static.developer.riotgames.com/docs/lol/queues.json'
+		const { data } = await axios.get(urlQueues)
+		const queue = data.filter(q => q.queueId == queueId)
+		return queue[0]
+	}
 	async getCurrentMatch(id) {
 		try {
 			// /spectator/v4/active-games/by-summoner/${id}
@@ -157,13 +164,13 @@ class UserData {
 			const { name: championName, image } = await this.getChampionById(
 				lastPlayedMatch.matches[0].champion
 			)
-			// const emoji = new Emoji(championName, message.guild.id, image, patch);
-			// const championEmoji = await emoji.process(message);
 			const {
 				gameMode,
 				participantIdentities,
 				participants,
+				queueId,
 			} = await this.advencedMatchInfo(gameId)
+			let { map, description: mode } = await this.getQueueById(queueId)
 			let currentPlayerId = null
 			const currentPlayerSum = []
 			const data = []
@@ -189,6 +196,8 @@ class UserData {
 			data.push({
 				patch: patch,
 				time,
+				map,
+				mode,
 				stats: {
 					win,
 					kills,
