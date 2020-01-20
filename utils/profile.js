@@ -77,7 +77,7 @@ class Profile {
 					id: summonerId,
 				} = await userData.profileBasicData()
 				const lastMatch = await userData.lastMatch(message)
-				const { patch, time } = lastMatch[0]
+				const { patch, time, mode, map } = lastMatch[0]
 				const {
 					win,
 					kills,
@@ -107,7 +107,8 @@ class Profile {
 					)
 					.addField(
 						'Last Played Match',
-						`[${win ? 'Victory' : 'defeat'}] ${
+						` \`${map} | ${mode}\` \n
+						[${win ? 'Victory' : 'defeat'}] ${
 							role == 'NONE' ? '' : role
 						} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled +
 							neutralMinionsKilled}CS** ${time}`,
