@@ -1,55 +1,10 @@
 const sql = require('sqlite')
 const UserData = require('./userData')
 const Discord = require('discord.js')
+const points = require('./pointsChanges')
+const Points = new points()
 class Profile {
 	constructor() {}
-	static async updatePoints(amount, message) {
-		try {
-			const userId = message.author.id
-			const isExist = await Profile.isExist(userId)
-			if (isExist) {
-				const db = await sql.open('./users.sqlite', { Promise })
-				const current = await Profile.getPoints(message)
-				const query = `UPDATE UsersData SET Points = ${current +
-					amount} WHERE UserId = ${userId}`
-				db.run(query)
-			}
-		} catch (err) {
-			console.log(err)
-		}
-	}
-	static async isExist(userId) {
-		try {
-			const db = await sql.open('./users.sqlite', { Promise })
-			const query = `SELECT * FROM UsersData WHERE UserId = ${userId} `
-			const data = await Promise.all([db.get(query)])
-			if (data[0] == undefined) {
-				return false
-			} else {
-				return true
-			}
-		} catch (err) {
-			console.log(err)
-		}
-	}
-	static async getPoints(message) {
-		try {
-			const db = await sql.open('./users.sqlite', { Promise })
-			const query = `SELECT Points FROM UsersData WHERE UserId = ${message.author.id}`
-			const data = await Promise.all([db.get(query)])
-			if (data[0] == undefined) {
-				return false
-			}
-
-			if (data[0].Points == null) {
-				return 0
-			} else {
-				return data[0].Points
-			}
-		} catch (err) {
-			console.log(err)
-		}
-	}
 	async setUser(message) {
 		const messageContent = message.content
 		const summoner = Profile.extractData(messageContent)
@@ -231,7 +186,7 @@ class Profile {
 						'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg'
 					)
 				message.channel.send(messageStyles)
-				Profile.updatePoints(3, message)
+				Points.setPoints = { msg: message, amount: 2 }
 			} else {
 				message.channel.send(
 					'Try to set user first ``?setUser [summoner name] [summoner region]`` '

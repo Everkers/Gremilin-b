@@ -5,7 +5,7 @@ const discord_token = process.env.TOKEN_DEVBOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
-let msg = null
+const Points = require('./utils/pointsChanges')
 const imageEditor = new ImageEditor()
 const profile = new Profile()
 const champion = new Champion()
@@ -15,7 +15,7 @@ const commands = {
 		regex: new RegExp('setUser', 'gis'),
 		execute: profile.setUser,
 	},
-	points: { regex: new RegExp('points', 'gis'), execute: Profile.getPoints },
+	points: { regex: new RegExp('points', 'gis') },
 	champion: {
 		regex: new RegExp('champion', 'gis'),
 		execute: champion.getData,
@@ -72,9 +72,10 @@ client.on('message', async message => {
 		} else if (content_msg.match(commands.champion.regex)) {
 			commands.champion.execute(message)
 		} else if (content_msg.match(commands.points.regex)) {
-			const points = await commands.points.execute(message)
-			if (points !== false) {
-				message.channel.send(`You have ${points}gp`)
+			const points = new Points(message.author.id)
+			const pts = await points.getPoints
+			if (pts !== false) {
+				message.channel.send(`You have ${pts}gp`)
 			} else {
 				message.channel.send(
 					'Something went wrong, Please set the user first , Use ``?setUser [summoner name] [summoner region]`` to set the user.'
