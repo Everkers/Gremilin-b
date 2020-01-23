@@ -18,6 +18,10 @@ class Points {
 			msg.channel.send(
 				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
 			)
+		} else if (this.points == 50) {
+			msg.channel.send(
+				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
+			)
 		}
 	}
 	async isExist(userId) {

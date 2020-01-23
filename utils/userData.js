@@ -97,6 +97,7 @@ class UserData {
 	async rankedInfo(summonerId) {
 		try {
 			const urlRanked = `${this.base_url}/league/v4/entries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`
+			console.log(urlRanked)
 			const { data: rankedData } = await axios.get(urlRanked)
 			const data = []
 			if (rankedData[0]) {

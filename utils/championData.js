@@ -1,7 +1,8 @@
 const axios = require('axios')
 const Discord = require('discord.js')
 const UserData = require('./userData')
-const Profile = require('./profile')
+const points = require('./pointsChanges')
+const Points = new points()
 class Champion {
 	async getData(message) {
 		const messageContent = message.content
@@ -60,7 +61,7 @@ class Champion {
 				)
 
 			message.channel.send(messageStyles)
-			Profile.updatePoints(3, message)
+			Points.setPoints = { msg: message, amount: 2 }
 		}
 	}
 }

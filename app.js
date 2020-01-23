@@ -20,6 +20,9 @@ const commands = {
 		regex: new RegExp('champion', 'gis'),
 		execute: champion.getData,
 	},
+	borders: {
+		regex: new RegExp('borders', 'gis'),
+	},
 	updateSummoner: {
 		regex: new RegExp('updateUser', 'gis'),
 		execute: profile.updateUser,
@@ -37,6 +40,11 @@ const messages = [
 	'?help',
 	'league of legends',
 	'world war III',
+	'start earning gp',
+	'gp = gremilin points',
+	'new borders are available',
+	'?points',
+	'?borders',
 ]
 client.on('ready', () => {
 	console.log('ready')
@@ -71,6 +79,28 @@ client.on('message', async message => {
 			commands.imageEditor.execute(message)
 		} else if (content_msg.match(commands.champion.regex)) {
 			commands.champion.execute(message)
+		} else if (content_msg.match(commands.borders.regex)) {
+			const messageStyles1 = new Discord.RichEmbed()
+				.setTitle('Gremilin Borders')
+				.addField(
+					'Border number 1',
+					'You can start using this border once you hit 50gp'
+				)
+				.setImage(
+					'https://media.discordapp.net/attachments/657198405852069893/670017837300973568/761.png?width=289&height=430'
+				)
+			const messageStyles2 = new Discord.RichEmbed()
+				.setTitle('Gremilin Borders')
+				.addField(
+					'Border number 2',
+					'You can start using this border once you hit 200gp'
+				)
+				.setImage(
+					'https://media.discordapp.net/attachments/668898486523133975/670018086363201556/527.png?width=289&height=430'
+				)
+			message.channel.send(messageStyles1)
+			message.channel.send(messageStyles2)
+			message.channel.send('``?points to see how much points you have``')
 		} else if (content_msg.match(commands.points.regex)) {
 			const points = new Points(message.author.id)
 			const pts = await points.getPoints
@@ -84,6 +114,7 @@ client.on('message', async message => {
 		} else if (content_msg.match(commands.help.regex)) {
 			const messageStyles = new Discord.RichEmbed()
 				.setTitle('Gremilin Commands')
+				.setDescription('Gp = Gremilin Points')
 				.addField(
 					'**Important**',
 					'If your username on league of legends contains more than one word then wrap the name with the double quotation marks \n ``example: ?updateUser "FNC MagiFelix" euw``'
@@ -110,8 +141,24 @@ client.on('message', async message => {
 					true
 				)
 				.addField(
-					'`` ?editMe ``',
+					'`` ?editMe [border number]``',
 					'This command will edit your discord profile picture.',
+					true
+				)
+				.addField(
+					'``?points``',
+					'This command will show you how much gp you have.',
+					true
+				)
+				.addField(
+					'``?borders``',
+					'This command will show you all the available borders.',
+					true
+				)
+
+				.addField(
+					'``How can i earn gp?``',
+					'You can start earning gp by using the bot, on each command you use, you earn certain amount of points',
 					true
 				)
 				.setFooter(
