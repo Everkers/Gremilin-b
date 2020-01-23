@@ -8,19 +8,19 @@ class Points {
 	updated(msg) {
 		if (this.points == 100) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
+				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
 			)
 		} else if (this.points == 200) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
+				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
 			)
 		} else if (this.points == 300) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
+				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
 			)
 		} else if (this.points == 50) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gb \`:confetti_ball: `
+				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
 			)
 		}
 	}
