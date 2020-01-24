@@ -97,16 +97,21 @@ class UserData {
 	async rankedInfo(summonerId) {
 		try {
 			const urlRanked = `${this.base_url}/league/v4/entries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`
-			console.log(urlRanked)
+			// console.log(urlRanked)
 			const { data: rankedData } = await axios.get(urlRanked)
-			const data = []
-			if (rankedData[0]) {
-				const { tier, rank, leaguePoints, wins, losses } = rankedData[0]
-				data.push({ tier, rank, leaguePoints, wins, losses })
-				return data[0]
-			} else {
-				return false
-			}
+			let data = []
+			rankedData.forEach(item => {
+				if (item.queueType == 'RANKED_SOLO_5x5') {
+					data.solo = []
+					const { tier, rank, leaguePoints, wins, losses, queueType } = item
+					data.solo.push({ tier, rank, leaguePoints, wins, losses, queueType })
+				} else if (item.queueType == 'RANKED_FLEX_SR') {
+					data.flex = []
+					const { tier, rank, leaguePoints, wins, losses, queueType } = item
+					data.flex.push({ tier, rank, leaguePoints, wins, losses, queueType })
+				}
+			})
+			return data
 		} catch (err) {
 			console.log(err)
 			throw new Error(

@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
-const discord_token = process.env.TOKEN_DEVBOT
+const discord_token = process.env.TOKEN_BOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
@@ -71,12 +71,12 @@ client.on('message', async message => {
 	const content_msg = message.content
 	if (content_msg.startsWith('?')) {
 		if (cooldown.has(message.author.id)) {
-			message.reply('cannot use that command just yet! wait for 30 seconds.')
+			message.reply('cannot use that command just yet! wait for 10 seconds.')
 		} else {
 			cooldown.add(message.author.id)
 			setTimeout(() => {
 				cooldown.delete(message.author.id)
-			}, 30000)
+			}, 10000)
 			if (content_msg.match(commands.profile.regex)) {
 				commands.profile.execute(message, client)
 			} else if (content_msg.match(commands.setSummoner.regex)) {

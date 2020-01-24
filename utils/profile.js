@@ -146,11 +146,22 @@ class Profile {
 					)
 					.addField(
 						`Summoner Rank`,
-						`${
-							rankedInfo
-								? `Tier : ${rankedInfo.tier} \n Rank : ${rankedInfo.rank} \n Points : ${rankedInfo.leaguePoints} \n Wins : ${rankedInfo.wins} \n Losses : ${rankedInfo.losses}`
-								: 'Unranked'
-						}`,
+						`\`Flex\`\n ${
+							rankedInfo.flex
+								? `Tier : ${rankedInfo.flex[0].tier} \n Rank : ${rankedInfo.flex[0].rank} \n Points : ${rankedInfo.flex[0].leaguePoints} \n Wins : ${rankedInfo.flex[0].wins}  \n Losses : ${rankedInfo.flex[0].losses}   `
+								: 'No Flex Data'
+						}
+						\`Solo\` \n ${
+							rankedInfo.solo
+								? `Tier : ${rankedInfo.solo[0].tier} \n Rank : ${rankedInfo.solo[0].rank} \n Points : ${rankedInfo.solo[0].leaguePoints} \n Wins : ${rankedInfo.solo[0].wins}  \n Losses : ${rankedInfo.solo[0].losses}`
+								: 'No Solo/Duo Data'
+						}
+						`,
+						// `${
+						// 	rankedInfo
+						// 		? `Tier : ${rankedInfo.tier} \n Rank : ${rankedInfo.rank} \n Points : ${rankedInfo.leaguePoints} \n Wins : ${rankedInfo.wins} \n Losses : ${rankedInfo.losses}`
+						// 		: 'Unranked'
+						// }`,
 						true
 					)
 					.addField(
