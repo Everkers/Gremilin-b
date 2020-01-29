@@ -12,12 +12,6 @@ class Profile {
 	async setUser(message) {
 		const messageContent = message.content
 		const summoner = Profile.extractData(messageContent)
-		const table = await new Promise((resolve, reject) => {
-			pool.query(
-				'CREATE TABLE IF NOT EXISTS users ( id BIGINT, username TEXT NOT NULL , region TEXT NOT NULL , userId TEXT NOT NULL , points INTEGER)'
-			)
-			resolve()
-		})
 		let rows = await new Promise((resolve, reject) => {
 			pool.query(
 				`SELECT * FROM users WHERE userid = '${message.author.id}'`,

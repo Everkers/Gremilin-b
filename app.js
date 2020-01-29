@@ -10,6 +10,7 @@ const imageEditor = new ImageEditor()
 const profile = new Profile()
 const champion = new Champion()
 const cooldown = new Set()
+const { Pool, Client } = require('pg')
 const commands = {
 	profile: { regex: new RegExp('profile', 'gis'), execute: profile.getData },
 	setSummoner: {
@@ -69,6 +70,23 @@ client.on('ready', () => {
 
 client.on('message', async message => {
 	const content_msg = message.content
+	if (content_msg == 'config-heroku-db') {
+		const connectionString = process.env.DATABASE_URL
+		const pool = new Pool({
+			connectionString,
+		})
+		const query = `CREATE TABLE test (
+			id BIGINT,
+			username TEXT NOT NULL,
+			region TEXT NOT NULL,
+			userid TEXT NOT NULL,
+			points INT
+		)`
+		pool.query(query, (err, res) => {
+			console.log(res)
+			message.channel.send(`` + res + ``)
+		})
+	}
 	if (content_msg.startsWith('?')) {
 		if (content_msg.match(commands.profile.regex)) {
 			commands.profile.execute(message, client)
