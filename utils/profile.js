@@ -1,24 +1,34 @@
-const sql = require('sqlite')
 const UserData = require('./userData')
 const Discord = require('discord.js')
 const points = require('./pointsChanges')
+const { Pool, Client } = require('pg')
+const connectionString = process.env.DATABASE_QUERY
+const pool = new Pool({
+	connectionString,
+})
 const Points = new points()
 class Profile {
 	constructor() {}
 	async setUser(message) {
 		const messageContent = message.content
 		const summoner = Profile.extractData(messageContent)
-		const db = await sql.open('./users.sqlite', { Promise })
-		const createTable = await db.run(
-			`CREATE TABLE IF NOT EXISTS UsersData (Username TEXT , Region TEXT , GuildId INTEGER , UserId INTEGER , Points INTEGER) `
-		)
-		const rows = await Promise.all([
-			db.get(`SELECT *  FROM UsersData WHERE UserId = ${message.author.id} `),
-		])
+		const table = await new Promise((resolve, reject) => {
+			pool.query(
+				'CREATE TABLE IF NOT EXISTS users ( id BIGINT, username TEXT NOT NULL , region TEXT NOT NULL , userId TEXT NOT NULL , points INTEGER)'
+			)
+			resolve()
+		})
+		let rows = await new Promise((resolve, reject) => {
+			pool.query(
+				`SELECT * FROM users WHERE userid = '${message.author.id}'`,
+				(err, res) => {
+					resolve(res.rows)
+				}
+			)
+		})
 		if (!rows[0] && summoner.name != '?setUser' && summoner.region != null) {
-			db.run(
-				`INSERT INTO UsersData (Username , Region , GuildId  , UserId   ) VALUES (?, ? , ? , ? )`,
-				[summoner.name, summoner.region, message.guild.id, message.author.id]
+			pool.query(
+				`INSERT INTO Users (username , region , userid) VALUES ('${summoner.name}' , '${summoner.region}' , ${message.author.id});`
 			)
 			message.channel.send('summoner has been successfully registered!')
 		} else {
@@ -28,10 +38,14 @@ class Profile {
 		}
 	}
 	static async getSummoner(userId) {
-		const db = await sql.open('./users.sqlite', { Promise })
-		const rows = await Promise.all([
-			db.get(`SELECT * FROM UsersData WHERE UserId = ${userId}`),
-		])
+		const rows = await new Promise((resolve, reject) => {
+			pool.query(
+				`SELECT * FROM users WHERE userid = '${userId}'`,
+				(err, res) => {
+					resolve(res.rows)
+				}
+			)
+		})
 		if (!rows[0]) {
 			return false
 		} else {
@@ -52,19 +66,21 @@ class Profile {
 	async updateUser(message) {
 		const messageContent = message.content
 		const summoner = Profile.extractData(messageContent)
-		const db = await sql.open('./users.sqlite', { Promise })
-		const inputData = [summoner.name, summoner.region, message.author.id]
-		const rows = await Promise.all([
-			db.get(`SELECT *  FROM UsersData WHERE UserId = ${message.author.id} `),
-		])
+		const rows = await new Promise((resolve, reject) => {
+			pool.query(
+				`SELECT * FROM users WHERE userid = '${message.author.id}'`,
+				(err, res) => {
+					resolve(res.rows)
+				}
+			)
+		})
 		if (!rows[0]) {
 			message.channel.send(
 				'Make sure to set the user first ``?setUser [summoner name] [summoner region]``. '
 			)
 		} else if (summoner.name != '?updateUser' && summoner.name != null) {
-			db.run(
-				'UPDATE UsersData SET Username=? , Region =?  WHERE UserId=? ',
-				inputData
+			pool.query(
+				`UPDATE users SET username= '${summoner.name}' , region ='${summoner.region}'  WHERE userid='${message.author.id}' `
 			)
 			message.channel.send('summoner data has been updated!')
 		} else {
@@ -76,8 +92,8 @@ class Profile {
 		try {
 			const getSummoner = await Profile.getSummoner(message.author.id)
 			if (getSummoner) {
-				const { Username, Region } = getSummoner[0]
-				const userData = new UserData(Region, Username)
+				const { username, region } = getSummoner[0]
+				const userData = new UserData(region, username)
 				const {
 					summonerLevel,
 					name: summonerName,
@@ -109,7 +125,7 @@ class Profile {
 				const currentMatch = await userData.getCurrentMatch(summonerId)
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
-					.setTitle(`${Username} Profile`)
+					.setTitle(`${username} Profile`)
 					.setThumbnail(
 						`http://ddragon.leagueoflegends.com/cdn/${patch}/img/profileicon/${profileIconId}.png`
 					)
@@ -124,7 +140,7 @@ class Profile {
 							neutralMinionsKilled}CS** ${time}`,
 						true
 					)
-					.addField('Level / Region', `${summonerLevel} / ${Region}`, true)
+					.addField('Level / region', `${summonerLevel} / ${region}`, true)
 					.addBlankField()
 					.addField(
 						`Highest Champions Mastery`,

@@ -1,4 +1,8 @@
-const sql = require('sqlite')
+const { Pool, Client } = require('pg')
+const connectionString = process.env.DATABASE_QUERY
+const pool = new Pool({
+	connectionString,
+})
 class Points {
 	constructor(tmpId) {
 		this.id = null
@@ -26,9 +30,14 @@ class Points {
 	}
 	async isExist(userId) {
 		try {
-			const db = await sql.open('./users.sqlite', { Promise })
-			const query = `SELECT * FROM UsersData WHERE UserId = ${userId} `
-			const data = await Promise.all([db.get(query)])
+			const data = await new Promise((resolve, reject) => {
+				pool.query(
+					`SELECT * FROM users WHERE userid = '${userId}'`,
+					(err, res) => {
+						resolve(res.rows)
+					}
+				)
+			})
 			if (data[0] == undefined) {
 				return false
 			} else {
@@ -41,19 +50,24 @@ class Points {
 	get getPoints() {
 		return (async () => {
 			try {
-				const db = await sql.open('./users.sqlite', { Promise })
-				const query = `SELECT Points FROM UsersData WHERE UserId = ${
-					this.id == null ? this.tmpId : this.id
-				}`
-				const data = await Promise.all([db.get(query)])
-				if (data[0] == undefined) {
-					return false
-				}
-
-				if (data[0].Points == null) {
+				const data = await new Promise((resolve, reject) => {
+					pool.query(
+						`SELECT points FROM users WHERE userid = '${
+							this.id == null ? this.tmpId : this.id
+						}'`,
+						(err, res) => {
+							if (res.rows.length < 1 || res.rows[0].points == null) {
+								resolve(null)
+							} else {
+								resolve(res.rows)
+							}
+						}
+					)
+				})
+				if (data == null) {
 					return 0
 				} else {
-					return data[0].Points
+					return data[0].points
 				}
 			} catch (err) {
 				console.log(err)
@@ -67,12 +81,16 @@ class Points {
 				const userId = msg.author.id
 				const isExist = await this.isExist(userId)
 				if (isExist) {
-					const db = await sql.open('./users.sqlite', { Promise })
 					this.id = userId
 					const current = await this.getPoints
-					const query = `UPDATE UsersData SET Points = ${current +
-						amount} WHERE UserId = ${userId}`
-					db.run(query)
+					const add = await new Promise((resolve, reject) => {
+						pool.query(
+							`UPDATE users SET points = ${current +
+								amount} WHERE userid = '${userId}'`
+						)
+						resolve()
+					})
+
 					this.points = current + amount
 					this.updated(msg)
 				}
