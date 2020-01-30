@@ -7,8 +7,10 @@ const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
 const Points = require('./utils/pointsChanges')
 const imageEditor = new ImageEditor()
+const Admin = require('./utils/admin')
 const profile = new Profile()
 const champion = new Champion()
+const admin = new Admin()
 const cooldown = new Set()
 const { Pool, Client } = require('pg')
 const commands = {
@@ -21,6 +23,10 @@ const commands = {
 	champion: {
 		regex: new RegExp('champion', 'gis'),
 		execute: champion.getData,
+	},
+	aUpdatePoints: {
+		regex: new RegExp('updategp', 'gis'),
+		execute: admin.updatePoints,
 	},
 	borders: {
 		regex: new RegExp('borders', 'gis'),
@@ -70,23 +76,6 @@ client.on('ready', () => {
 
 client.on('message', async message => {
 	const content_msg = message.content
-	if (content_msg == 'config-heroku-db') {
-		const connectionString = process.env.DATABASE_URL
-		const pool = new Pool({
-			connectionString,
-		})
-		const query = `CREATE TABLE test (
-			id BIGINT,
-			username TEXT NOT NULL,
-			region TEXT NOT NULL,
-			userid TEXT NOT NULL,
-			points INT
-		)`
-		pool.query(query, (err, res) => {
-			console.log(res)
-			message.channel.send(`` + res + ``)
-		})
-	}
 	if (content_msg.startsWith('?')) {
 		if (content_msg.match(commands.profile.regex)) {
 			commands.profile.execute(message, client)
@@ -124,7 +113,7 @@ client.on('message', async message => {
 			const points = new Points(message.author.id)
 			const pts = await points.getPoints
 			if (pts !== false) {
-				message.channel.send(`You have ${pts}gp`)
+				message.reply(`You have ${pts}gp`)
 			} else {
 				message.channel.send(
 					'Something went wrong, Please set the user first , Use ``?setUser [summoner name] [summoner region]`` to set the user.'
@@ -185,6 +174,14 @@ client.on('message', async message => {
 					'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg'
 				)
 			message.channel.send(messageStyles)
+		} else if (content_msg.match(commands.aUpdatePoints.regex)) {
+			const isadmin = admin.isAdmin(message.author.id)
+			const [command, amount] = content_msg.split(' ')
+			if (isadmin && amount != undefined) {
+				admin.updatePoints(message, amount)
+			} else {
+				message.reply('Permission denied you are not an admin of gremilin!')
+			}
 		}
 	}
 })

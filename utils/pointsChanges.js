@@ -16,15 +16,15 @@ class Points {
 			)
 		} else if (this.points == 200) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
+				` \`congratulations ${msg.author.username} you got ${this.points}gp \`:confetti_ball: `
 			)
 		} else if (this.points == 300) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
+				` \`congratulations ${msg.author.username} you got ${this.points}gp \`:confetti_ball: `
 			)
 		} else if (this.points == 50) {
 			msg.channel.send(
-				` \`congratulations you got ${this.points}gp \`:confetti_ball: `
+				` \`congratulations ${msg.author.username} you got ${this.points}gp \`:confetti_ball: `
 			)
 		}
 	}
@@ -77,8 +77,9 @@ class Points {
 	set setPoints(data) {
 		;(async () => {
 			try {
-				const { msg, amount } = data
+				let { msg, amount } = data
 				const userId = msg.author.id
+				amount = parseInt(amount)
 				const isExist = await this.isExist(userId)
 				if (isExist) {
 					this.id = userId
