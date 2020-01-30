@@ -21,7 +21,7 @@ class ImageEditor {
 			} else if (overlay == 2 && gp >= 200) {
 				console.log('uploading')
 				const { data: image } = await axios.get(
-					`https://league-fire1.herokuapp.com/imageUpload?url=${imageUrl}&overlay=${overlay}`
+					`https://league-fire-b.herokuapp.com/imageUpload?url=${imageUrl}&overlay=${overlay}`
 				)
 				const { url: editedImageUrl, id } = image
 				const sendImage = await message.channel.send('BINGO!:heart:', {
@@ -30,7 +30,7 @@ class ImageEditor {
 				ImageEditor.deleteImage(id)
 			} else if (overlay == 1 && gp >= 50) {
 				const { data: image } = await axios.get(
-					`https://league-fire1.herokuapp.com/imageUpload?url=${imageUrl}&overlay=${overlay}`
+					`https://league-fire-b.herokuapp.com/imageUpload?url=${imageUrl}&overlay=${overlay}`
 				)
 				const { url: editedImageUrl, id } = image
 				const sendImage = await message.channel.send('BINGO!:heart:', {
@@ -48,7 +48,7 @@ class ImageEditor {
 	static async deleteImage(id) {
 		try {
 			const { data: remove } = await axios.get(
-				`https://league-fire1.herokuapp.com/imageDelete/${id}`
+				`https://league-fire-b.herokuapp.com/imageDelete/${id}`
 			)
 		} catch (err) {
 			console.log(err)

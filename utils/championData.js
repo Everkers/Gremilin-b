@@ -17,7 +17,7 @@ class Champion {
 			const { image } = await userData.getChampionByName(championName)
 			const championImage = `http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${image.full}`
 			const { data: championData } = await axios.get(
-				`https://league-fire1.herokuapp.com/champion/${championName}`
+				`https://league-fire-b.herokuapp.com/champion/${championName}`
 			)
 			const messageStyles = new Discord.RichEmbed()
 				.setColor('#e74c3c')
