@@ -19,6 +19,7 @@ class Champion {
 			const { data: championData } = await axios.get(
 				`https://league-fire-b.herokuapp.com/champion/${championName}`
 			)
+			console.log(championData)
 			const messageStyles = new Discord.RichEmbed()
 				.setColor('#e74c3c')
 				.setTitle(`${championData.data.champion}`)
