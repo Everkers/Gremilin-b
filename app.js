@@ -86,7 +86,8 @@ client.on('message', async message => {
 		} else if (content_msg.match(commands.imageEditor.regex)) {
 			commands.imageEditor.execute(message)
 		} else if (content_msg.match(commands.champion.regex)) {
-			commands.champion.execute(message)
+			// commands.champion.execute(message)
+			message.reply('Sorry this feature is under maintenance, try again later')
 		} else if (content_msg.match(commands.borders.regex)) {
 			const messageStyles1 = new Discord.RichEmbed()
 				.setTitle('Gremilin Borders')
