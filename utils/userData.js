@@ -1,6 +1,6 @@
 const axios = require('axios')
-const fetch = require('node-fetch')
 const moment = require('moment')
+const emoji = require('./emojiHandler')
 class UserData {
 	constructor(region, username) {
 		this.base_url = `https://${UserData.Region(region)}.api.riotgames.com/lol`
@@ -66,10 +66,7 @@ class UserData {
 		const { data: match } = await axios.get(url)
 		return match
 	}
-	deleteEmoji(emojiId, guildId) {
-		const emoji = new Emoji()
-		emoji.delete(emojiId, guildId)
-	}
+
 	async mostPlayedChampions(summonerId, patch, message) {
 		try {
 			const url_mostPlayedChampions = `${this.base_url}/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}?api_key=${process.env.TOKEN_LOL}`
@@ -169,6 +166,13 @@ class UserData {
 			const { name: championName, image } = await this.getChampionById(
 				lastPlayedMatch.matches[0].champion
 			)
+			const emojisHandler = new emoji(
+				image,
+				patch,
+				championName,
+				message.guild.id
+			)
+			const uploadEmoji = await emojisHandler.upload()
 			const {
 				gameMode,
 				participantIdentities,
@@ -203,6 +207,7 @@ class UserData {
 				time,
 				map,
 				mode,
+				emojisHandler: emojisHandler,
 				stats: {
 					win,
 					kills,
