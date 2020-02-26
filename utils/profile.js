@@ -130,9 +130,9 @@ class Profile {
 					.addField(
 						'Last Played Match',
 						` \`${map} | ${mode}\` \n
-						[${win ? 'Victory' : 'defeat'} ${
+						${win ? ':green_circle:' : ':red_circle:'} ${
 							deaths == 0 && kills > 1 ? ', ``' + 'PERFECT KDA' + '``' : ''
-						}] ${role == 'NONE' ? '' : role} ${lane} as ${championName +
+						} ${role == 'NONE' ? '' : role} ${lane} as ${championName +
 							' ' +
 							lastMatchChampionEmoji} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled +
 							neutralMinionsKilled}CS** ${time}`,
