@@ -95,7 +95,7 @@ class Profile {
 					id: summonerId,
 				} = await userData.profileBasicData()
 				const lastMatch = await userData.lastMatch(message)
-				const { patch, time, mode, map } = lastMatch[0]
+				const { patch, time, mode, map, emojisHandler } = lastMatch[0]
 				const {
 					win,
 					kills,
@@ -120,7 +120,6 @@ class Profile {
 				const lastMatchChampionEmoji = await message.guild.emojis.find(
 					emoji => emoji.name == championName
 				)
-				console.log(lastMatchChampionEmoji)
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${username} Profile`)
@@ -210,7 +209,10 @@ class Profile {
 						`Developed with love by Everkers#6416`,
 						'https://i.pinimg.com/236x/f0/10/b2/f010b2798bfaa02c4afd72cb2aef6bfc.jpg'
 					)
-				message.channel.send(messageStyles)
+				const sendMsg = await message.channel.send(messageStyles)
+				const deleteLastMatchEmoji = await emojisHandler.delete(
+					lastMatchChampionEmoji.id
+				)
 				Points.setPoints = { msg: message, amount: 2 }
 			} else {
 				message.channel.send(

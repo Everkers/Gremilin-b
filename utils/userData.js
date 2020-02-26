@@ -207,6 +207,7 @@ class UserData {
 				time,
 				map,
 				mode,
+				emojisHandler: emojisHandler,
 				stats: {
 					win,
 					kills,

@@ -19,7 +19,7 @@ class EmojiHandler {
 					body: JSON.stringify(body),
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bot ${process.env.TOKEN_DEVBOT}`,
+						Authorization: `Bot ${process.env.TOKEN_BOT}`,
 					},
 				})
 				resolve(true)
@@ -29,6 +29,24 @@ class EmojiHandler {
 			}
 		})
 		return up
+	}
+	delete(emojiId) {
+		const dl = new Promise(async (resolve, reject) => {
+			try {
+				const response = await fetch(`${this.url}/${emojiId}`, {
+					method: 'delete',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bot ${process.env.TOKEN_BOT}`,
+					},
+				})
+				resolve(true)
+			} catch (err) {
+				console.log(err)
+				reject(false)
+			}
+		})
+		return dl
 	}
 	async imageTobase64() {
 		if (!this.image) {
