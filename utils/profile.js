@@ -117,6 +117,10 @@ class Profile {
 				)
 				const rankedInfo = await userData.rankedInfo(summonerId)
 				const currentMatch = await userData.getCurrentMatch(summonerId)
+				const lastMatchChampionEmoji = await message.guild.emojis.find(
+					emoji => emoji.name == championName
+				)
+				console.log(lastMatchChampionEmoji)
 				const messageStyles = new Discord.RichEmbed()
 					.setColor('#e74c3c')
 					.setTitle(`${username} Profile`)
@@ -128,9 +132,9 @@ class Profile {
 						` \`${map} | ${mode}\` \n
 						[${win ? 'Victory' : 'defeat'} ${
 							deaths == 0 && kills > 1 ? ', ``' + 'PERFECT KDA' + '``' : ''
-						}] ${
-							role == 'NONE' ? '' : role
-						} ${lane} as ${championName} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled +
+						}] ${role == 'NONE' ? '' : role} ${lane} as ${championName +
+							' ' +
+							lastMatchChampionEmoji} with **${kills}/${deaths}/${assists}** and **${totalMinionsKilled +
 							neutralMinionsKilled}CS** ${time}`,
 						true
 					)
