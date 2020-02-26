@@ -117,6 +117,7 @@ class Profile {
 				)
 				const rankedInfo = await userData.rankedInfo(summonerId)
 				const currentMatch = await userData.getCurrentMatch(summonerId)
+				const uploadEmoji = await emojisHandler.upload()
 				const lastMatchChampionEmoji = await message.guild.emojis.find(
 					emoji => emoji.name == championName
 				)
@@ -220,7 +221,7 @@ class Profile {
 				)
 			}
 		} catch (err) {
-			message.channel.send(err.message)
+			console.log(err)
 		}
 	}
 }

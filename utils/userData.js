@@ -172,7 +172,6 @@ class UserData {
 				championName,
 				message.guild.id
 			)
-			const uploadEmoji = await emojisHandler.upload()
 			const {
 				gameMode,
 				participantIdentities,
