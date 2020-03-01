@@ -5,12 +5,14 @@ const discord_token = process.env.TOKEN_BOT
 const Profile = require('./utils/profile')
 const ImageEditor = require('./utils/imageEditor')
 const Champion = require('./utils/championData')
+const Spotlight = require('./utils/spotlight')
 const Points = require('./utils/pointsChanges')
 const imageEditor = new ImageEditor()
 const Admin = require('./utils/admin')
 const profile = new Profile()
 const champion = new Champion()
 const admin = new Admin()
+const spotlight = new Spotlight()
 const cooldown = new Set()
 const { Pool, Client } = require('pg')
 const commands = {
@@ -41,6 +43,10 @@ const commands = {
 	},
 	help: {
 		regex: new RegExp('help', 'gis'),
+	},
+	spotlight: {
+		regex: new RegExp('spotlight', 'gis'),
+		execute: spotlight.getChampionData,
 	},
 }
 const messages = [
@@ -75,6 +81,50 @@ client.on('ready', () => {
 })
 
 client.on('message', async message => {
+	if (message.author.bot) {
+		const embed = message.embeds.find(m => m.title.includes('spotlight'))
+		if (embed) {
+			message
+				.react('1⃣')
+				.then(() => message.react('2⃣'))
+				.then(() => message.react('3⃣'))
+				.then(() => message.react('4⃣'))
+				.then(() => message.react('5⃣'))
+		}
+	}
+	if (
+		message.author.bot &&
+		message.embeds.find(m => m.title.includes('spotlight'))
+	) {
+		message
+			.awaitReactions((reaction, user) => reaction.count > 1, {
+				max: 1,
+				time: 86400000,
+			})
+			.then(async col => {
+				const emoji = col.first().emoji.name
+				if (emoji === '1⃣') {
+					const embd = message.embeds.find(m => m.title.includes('spotlight'))
+					const [championName] = embd.title.split(' ')
+					const {
+						championData,
+						patch,
+						champion,
+					} = await spotlight.getChampionData(championName)
+					const storyEmbed = new Discord.RichEmbed()
+						.setTitle(`${champion} Story`)
+						.addField(
+							`Story of ${championData.data[champion].name} ${championData.data[champion].title}`,
+							championData.data[champion].lore
+						)
+						.setThumbnail(
+							`http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${championData.data[champion].image.full}`
+						)
+					message.channel.send(storyEmbed)
+				}
+			})
+	}
+
 	const content_msg = message.content
 	if (content_msg.startsWith('?')) {
 		if (content_msg.match(commands.profile.regex)) {
@@ -87,7 +137,6 @@ client.on('message', async message => {
 			commands.imageEditor.execute(message)
 		} else if (content_msg.match(commands.champion.regex)) {
 			commands.champion.execute(message)
-			// message.reply('Sorry this feature is under maintenance, try again later')
 		} else if (content_msg.match(commands.borders.regex)) {
 			const messageStyles1 = new Discord.RichEmbed()
 				.setTitle('Gremilin Borders')
@@ -182,6 +231,34 @@ client.on('message', async message => {
 				admin.updatePoints(message, amount)
 			} else {
 				message.reply('Permission denied you are not an admin of gremilin!')
+			}
+		} else if (content_msg.match(commands.spotlight.regex)) {
+			try {
+				const messageContent = message.content
+				const [championName] = messageContent
+					.substr(messageContent.indexOf(' ') + 1)
+					.split(' ')
+				if (championName != '?spotlight') {
+					const isChampionExist = await spotlight.isChampionExist(championName)
+					if (isChampionExist) {
+						const msgEmbed = new Discord.RichEmbed()
+							.setTitle(`${championName} spotlight`)
+							.setDescription(
+								` 1⃣ - Story \n
+				️️️️      2⃣ - Abilities \n
+					  3⃣ - Skins \n
+					  4⃣ - Tips \n
+					  5⃣ - How to counter
+				`
+							)
+
+						message.channel.send(msgEmbed)
+					}
+				} else {
+					message.reply('please add a champion name')
+				}
+			} catch (err) {
+				message.channel.send(err.message)
 			}
 		}
 	}
