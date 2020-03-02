@@ -99,18 +99,18 @@ client.on('message', async message => {
 		message
 			.awaitReactions((reaction, user) => reaction.count > 1, {
 				max: 1,
-				time: 86400000,
+				time: 60000,
 			})
 			.then(async col => {
 				const emoji = col.first().emoji.name
+				const embd = message.embeds.find(m => m.title.includes('spotlight'))
+				const [championName] = embd.title.split(' ')
+				const {
+					championData,
+					patch,
+					champion,
+				} = await spotlight.getChampionData(championName)
 				if (emoji === '1⃣') {
-					const embd = message.embeds.find(m => m.title.includes('spotlight'))
-					const [championName] = embd.title.split(' ')
-					const {
-						championData,
-						patch,
-						champion,
-					} = await spotlight.getChampionData(championName)
 					const storyEmbed = new Discord.RichEmbed()
 						.setTitle(`${champion} Story`)
 						.addField(
@@ -122,7 +122,58 @@ client.on('message', async message => {
 						)
 					message.channel.send(storyEmbed)
 				}
+				if (emoji === '2⃣') {
+					const storyEmbed = new Discord.RichEmbed()
+						.setTitle(`${champion} Abilities`)
+						.setDescription(
+							`Abilities of ${championData.data[champion].name} ${championData.data[champion].title}`
+						)
+						.setThumbnail(
+							`http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${championData.data[champion].image.full}`
+						)
+					championData.data[champion].spells.forEach(spell => {
+						storyEmbed.addField(
+							`${spell.name} [${spell.id.split(champion)[1]}]`,
+							spell.description.replace(
+								/<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|font|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\2>/gi,
+								''
+							)
+						)
+					})
+					storyEmbed.addField(
+						`${championData.data[champion].passive.name} [Passive]`,
+						championData.data[champion].passive.description
+					)
+					message.channel.send(storyEmbed)
+				} else if (emoji === '4⃣') {
+					const tipsEmbed = new Discord.RichEmbed()
+						.setTitle(`${champion} Tips`)
+						.addField(
+							`Tips for ${championData.data[champion].name} ${championData.data[champion].title}`,
+							`${championData.data[champion].allytips
+								.map(tip => `${tip}\n\n`)
+								.join('')}`
+						)
+						.setThumbnail(
+							`http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${championData.data[champion].image.full}`
+						)
+					message.channel.send(tipsEmbed)
+				} else if (emoji === '5⃣') {
+					const tipsEmbed = new Discord.RichEmbed()
+						.setTitle(`How to counter ${champion}`)
+						.addField(
+							`Countering tips for ${championData.data[champion].name} ${championData.data[champion].title}`,
+							`${championData.data[champion].enemytips
+								.map(tip => `${tip}\n\n`)
+								.join('')}`
+						)
+						.setThumbnail(
+							`http://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${championData.data[champion].image.full}`
+						)
+					message.channel.send(tipsEmbed)
+				}
 			})
+		message.delete(50000)
 	}
 
 	const content_msg = message.content
