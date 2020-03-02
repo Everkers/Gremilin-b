@@ -145,6 +145,14 @@ client.on('message', async message => {
 						championData.data[champion].passive.description
 					)
 					message.channel.send(storyEmbed)
+				} else if (emoji === '3⃣') {
+					championData.data[champion].skins.forEach(skin => {
+						message.channel.send(skin.name, {
+							files: [
+								`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion}_${skin.num}.jpg`,
+							],
+						})
+					})
 				} else if (emoji === '4⃣') {
 					const tipsEmbed = new Discord.RichEmbed()
 						.setTitle(`${champion} Tips`)
