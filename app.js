@@ -62,21 +62,12 @@ const messages = [
 ]
 client.on('ready', () => {
 	console.log('ready')
-	setInterval(() => {
-		const state = messages[Math.floor(Math.random() * messages.length)]
-		client.user.setPresence({
-			game: {
-				name: state,
-			},
-			status: 'dnd',
-		})
-	}, 60000)
 
 	client.user.setPresence({
 		game: {
 			name: '?help',
 		},
-		status: 'idle',
+		status: 'dnd',
 	})
 })
 
